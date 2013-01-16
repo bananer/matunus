@@ -1,0 +1,2 @@
+serviceClass: de.philipfrank.gwt.matunus.client.GreetingService
+path: D3B732257D6040359C51C43B28DC5561.gwt.rpc
