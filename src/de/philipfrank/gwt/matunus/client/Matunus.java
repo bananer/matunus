@@ -17,6 +17,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 import de.philipfrank.gwt.matunus.shared.RemoteDirectory;
 import de.philipfrank.gwt.matunus.shared.RemoteFile;
@@ -34,22 +35,30 @@ public class Matunus implements EntryPoint {
 	private Tree fileList = new Tree(); // TODO: images
 	private Label directoryLabel = new Label("/", false);
 	private Hyperlink parentLink = new Hyperlink("..", "");
+	private Widget spinner = new Label("Loading...");
 
 	private void setDirectory(String newDir) {
-
-		if (newDir.startsWith(directory)) {
-			// TODO: Does this make sense?
-			parentLink.setTargetHistoryToken(directory);
+		
+		if(directory.isEmpty() || directory.equals("/")) {
+			parentLink.setVisible(false);
+			directory = "/";
 		}
+		else {
+			// TODO: breaks when using browser forward button
+			parentLink.setTargetHistoryToken(directory.substring(0, directory.lastIndexOf("/")));
+			parentLink.setVisible(true);
+		}
+		
+		spinner.setVisible(true);
 
 		directory = newDir;
-		directoryLabel.setText(directory.isEmpty() ? "/" : directory);
 		fileListService.read(directory, new AsyncCallback<RemoteDirectory>() {
 			@Override
 			public void onSuccess(RemoteDirectory result) {
 
 				fileList.removeItems();
-
+				directoryLabel.setText(directory.isEmpty() ? "/" : directory);
+				spinner.setVisible(false);
 				for (RemoteFile entry : result) {
 					if (entry.isDirectory()) {
 						fileList.addItem(new TreeItem(new DirectoryWidget(directory, entry)));
@@ -74,6 +83,7 @@ public class Matunus implements EntryPoint {
 
 		RootPanel container = RootPanel.get("fileListContainer");
 		container.add(directoryLabel);
+		container.add(spinner);
 		container.add(parentLink);
 		container.add(fileList);
 		History.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -81,7 +91,6 @@ public class Matunus implements EntryPoint {
 			public void onValueChange(ValueChangeEvent<String> event) {
 				setDirectory(event.getValue());
 			}
-
 		});
 
 		History.fireCurrentHistoryState();
