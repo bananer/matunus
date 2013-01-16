@@ -15,7 +15,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 import de.philipfrank.gwt.matunus.shared.RemoteFile;
 
-class FileWidget extends HorizontalPanel {
+class FileWidget extends VerticalPanel {
 	
 	interface PreviewBuilder {
 		public Widget render();
@@ -56,7 +56,7 @@ class FileWidget extends HorizontalPanel {
 			if (v != null) {
 				v.setSrc(file.getDownloadLink());
 				v.setControls(true);
-				v.setAutoplay(true);
+				v.play();
 				v.setTitle(file.getName());
 				return v;
 			}
@@ -76,6 +76,9 @@ class FileWidget extends HorizontalPanel {
 			Audio a = Audio.createIfSupported();
 			if(a != null) {
 				a.setSrc(file.getDownloadLink());
+				a.play();
+				a.setControls(true);
+				a.setTitle(file.getName());
 				return a;
 			}
 			return new Label("Audio not supported by your browser.");
@@ -83,7 +86,7 @@ class FileWidget extends HorizontalPanel {
 	}
 	
 	private PreviewBuilder previewBuilder;
-	private DialogBox previewDialog;
+	private Widget preview;
 	
 	private static PreviewBuilder getPreviewBuilder(RemoteFile file){
 		String fileName = file.getName().toLowerCase();
@@ -106,48 +109,36 @@ class FileWidget extends HorizontalPanel {
 		}
 		return null;
 	}
-	
-	private DialogBox buildDialog() {
-		final DialogBox dialogBox = new DialogBox();
-		dialogBox.setText("Preview");
-		dialogBox.setAnimationEnabled(true);
-		final Button closeButton = new Button("Close");
-		VerticalPanel dialogVPanel = new VerticalPanel();
-		Widget preview = previewBuilder.render();
-		preview.setHeight("500px");
-		preview.setWidth("500px");
-		dialogVPanel.add(preview);
-		dialogVPanel.add(closeButton);
-		dialogBox.setWidth("750px");
-		dialogBox.setWidget(dialogVPanel);
 
-		// Add a handler to close the DialogBox
-		closeButton.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
-				dialogBox.hide();
-			}
-		});
-
-		return dialogBox;
-	}
 	
 	public FileWidget(RemoteFile file) {
 		super();
-		add(new Anchor(file.getName(), file.getDownloadLink()));
+		HorizontalPanel mainRow = new HorizontalPanel();
+		add(mainRow);
+		mainRow.add(new Anchor(file.getName(), file.getDownloadLink()));
 		previewBuilder = getPreviewBuilder(file);
 		if(previewBuilder != null) {
 			Button previewButton = new Button("►");
 			previewButton.addClickHandler(new ClickHandler() {
-				
+				private boolean showing = false;
 				@Override
 				public void onClick(ClickEvent event) {
-					if(previewDialog == null) {
-						previewDialog = buildDialog();
+					if(!showing) {
+						if(preview == null) {
+							preview = previewBuilder.render();
+						}
+						if(preview.getOffsetHeight()>500) {
+							preview.setHeight("500px");
+						}
+						FileWidget.this.add(preview);
 					}
-					previewDialog.center();
+					else {
+						FileWidget.this.remove(preview);
+					}
+					showing = !showing;
 				}
 			});
-			add(previewButton);
+			mainRow.add(previewButton);
 		}
 	}
 }
