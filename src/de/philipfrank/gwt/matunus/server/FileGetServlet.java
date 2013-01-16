@@ -12,6 +12,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 
+/**
+ * Servlet for file downloads
+ * TODO: maybe use this: http://balusc.blogspot.de/2009/02/fileservlet-supporting-resume-and.html
+ * @author Philip Frank
+ *
+ */
 public class FileGetServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -74009257484379937L;

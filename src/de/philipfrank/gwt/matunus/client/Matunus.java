@@ -9,7 +9,6 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Hyperlink;
@@ -36,18 +35,6 @@ public class Matunus implements EntryPoint {
 	private Label directoryLabel = new Label("/", false);
 	private Hyperlink parentLink = new Hyperlink("..", "");
 
-	private class FileWidget extends Anchor {
-		public FileWidget(RemoteFile file) {
-			super(file.getName(), file.getDownloadLink());
-		}
-	}
-
-	private class DirectoryWidget extends Hyperlink {
-		public DirectoryWidget(RemoteFile dir) {
-			super(tailSlash(dir.getName()), tailSlash(dir.getName() + "/"));
-		}
-	}
-
 	private void setDirectory(String newDir) {
 
 		if (newDir.startsWith(directory)) {
@@ -65,7 +52,7 @@ public class Matunus implements EntryPoint {
 
 				for (RemoteFile entry : result) {
 					if (entry.isDirectory()) {
-						fileList.addItem(new TreeItem(new DirectoryWidget(entry)));
+						fileList.addItem(new TreeItem(new DirectoryWidget(directory, entry)));
 					} else {
 						fileList.addItem(new TreeItem(new FileWidget(entry)));
 					}
@@ -124,8 +111,4 @@ public class Matunus implements EntryPoint {
 		dialogBox.center();
 	}
 	
-
-	private static String tailSlash(String dir) {
-		return dir.endsWith("/") ? dir : dir + "/";
-	}
 }
