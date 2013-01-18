@@ -5,6 +5,15 @@
          version="2.5"
          xmlns="http://java.sun.com/xml/ns/javaee">
 
+  <context-param>
+    <param-name>rootDirectory</param-name>
+    <param-value>/home/bananer/torrents/done</param-value>
+  </context-param>
+  <context-param>
+    <param-name>urlRoot</param-name>
+    <param-value>http://t.bananer.de:8080/Matunus/matunus/</param-value>
+  </context-param>
+
   <!-- Servlets -->
   <servlet>
       <servlet-name>fileListServlet</servlet-name>

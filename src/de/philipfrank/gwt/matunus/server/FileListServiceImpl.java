@@ -8,20 +8,29 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import de.philipfrank.gwt.matunus.client.FileListService;
 import de.philipfrank.gwt.matunus.shared.RemoteDirectory;
 import de.philipfrank.gwt.matunus.shared.RemoteFile;
+import de.philipfrank.gwt.matunus.shared.Util;
 
 @SuppressWarnings("serial")
 public class FileListServiceImpl extends RemoteServiceServlet implements
 		FileListService {
+	private String rootDir;
+	private String urlRoot;
+	
+	@Override
+	public void init(){
+		rootDir = Util.tailSlash(getServletContext().getInitParameter("rootDirectory"));
+		urlRoot = Util.tailSlash(getServletContext().getInitParameter("urlRoot"));
+	}
 
 	@Override
 	public RemoteDirectory read(String requestedDir) {
 		final RemoteDirectory res = new RemoteDirectory();
 
-		File dir = new File(ServerSettings.serviceRoot + "/" + requestedDir);
+		File dir = new File(rootDir + requestedDir);
 
 		try {
 			// TODO: safe???
-			if (!dir.getCanonicalPath().startsWith(ServerSettings.serviceRoot)) {
+			if (!Util.tailSlash(dir.getCanonicalPath()).startsWith(rootDir)) {
 				throw new IllegalArgumentException("not in serviceRoot: "
 						+ dir.getCanonicalPath());
 			}
@@ -32,7 +41,7 @@ public class FileListServiceImpl extends RemoteServiceServlet implements
 
 			for (File file : dir.listFiles()) {
 				RemoteFile r = new RemoteFile(file.getName(), file.isDirectory());
-				r.setDownloadLink("/matunus/get/"+requestedDir+file.getName());
+				r.setDownloadLink(urlRoot + "get/"+requestedDir+file.getName());
 				res.add(r);
 			}
 
