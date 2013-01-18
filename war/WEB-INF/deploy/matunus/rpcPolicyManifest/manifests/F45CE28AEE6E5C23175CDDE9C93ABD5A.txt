@@ -1,2 +1,0 @@
-serviceClass: de.philipfrank.gwt.matunus.client.FileListService
-path: D4070D19A1AB174BE783443A2ED9A47C.gwt.rpc
