@@ -1,7 +1,6 @@
 package de.philipfrank.gwt.matunus.server;
 
 import java.io.File;
-import java.io.IOException;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -13,41 +12,49 @@ import de.philipfrank.gwt.matunus.shared.Util;
 @SuppressWarnings("serial")
 public class FileListServiceImpl extends RemoteServiceServlet implements
 		FileListService {
-	private String rootDir;
 	private String urlRoot;
+	private AccessFilter accessFilter;
 	
 	@Override
 	public void init(){
-		rootDir = Util.tailSlash(getServletContext().getInitParameter("rootDirectory"));
 		urlRoot = Util.tailSlash(getServletContext().getInitParameter("urlRoot"));
+		accessFilter = new AccessFilter(getServletContext());
+	}
+	
+	protected String parentDir(String dir) {
+		if(!dir.startsWith(accessFilter.getRootDir())) {
+			return "";
+		}
+		dir = dir.substring(accessFilter.getRootDir().length());
+		
+		if(dir.lastIndexOf("/") == dir.length()-1) {
+			dir = dir.substring(dir.length()-1);
+		}
+		if(dir.lastIndexOf("/") <= 0) {
+			return "";
+		}
+		return dir.substring(0, dir.lastIndexOf("/"));
 	}
 
 	@Override
 	public RemoteDirectory read(String requestedDir) {
-		final RemoteDirectory res = new RemoteDirectory();
 
-		File dir = new File(rootDir + requestedDir);
+		File dir = new File(accessFilter.getRootDir() + requestedDir);
 
-		try {
-			// TODO: safe???
-			if (!Util.tailSlash(dir.getCanonicalPath()).startsWith(rootDir)) {
-				throw new IllegalArgumentException("not in serviceRoot: "
-						+ dir.getCanonicalPath());
-			}
+		accessFilter.tryAccess(dir);
 
-			if (!dir.isDirectory()) {
-				throw new IllegalArgumentException("not a directory: "+dir);
-			}
+		if (!dir.isDirectory()) {
+			throw new IllegalArgumentException("not a directory: "+dir);
+		}
+		
+		final RemoteDirectory res = new RemoteDirectory(parentDir(dir.getPath()));
 
-			for (File file : dir.listFiles()) {
+		for (File file : dir.listFiles()) {
+			if(accessFilter.canAccess(file)) {
 				RemoteFile r = new RemoteFile(file.getName(), file.isDirectory());
 				r.setDownloadLink(urlRoot + "get/"+requestedDir+file.getName());
 				res.add(r);
 			}
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 
 		return res;

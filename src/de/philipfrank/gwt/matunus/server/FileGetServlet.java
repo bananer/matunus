@@ -12,8 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 
-import de.philipfrank.gwt.matunus.shared.Util;
-
 /**
  * Servlet for file downloads
  * TODO: maybe use this: http://balusc.blogspot.de/2009/02/fileservlet-supporting-resume-and.html
@@ -24,13 +22,11 @@ public class FileGetServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -74009257484379937L;
 	
-	private String rootDir;
+	AccessFilter accessFilter;
 	
 	@Override
 	public void init(){
-		// TODO: duplicate code in FileListService
-		rootDir = getServletContext().getInitParameter("rootDirectory");
-		rootDir = Util.tailSlash(rootDir);
+		accessFilter = new AccessFilter(getServletContext());
 	}
 
 	@Override
@@ -39,13 +35,9 @@ public class FileGetServlet extends HttpServlet {
 
 		String requestedPath = req.getPathInfo();
 
-		File file = new File(rootDir + requestedPath);
+		File file = new File(accessFilter.getRootDir() + requestedPath);
 
-		// TODO: safe???
-		if (!Util.tailSlash(file.getCanonicalPath()).startsWith(rootDir)) {
-			throw new IllegalArgumentException("not in serviceRoot: "
-					+ file.getCanonicalPath());
-		}
+		accessFilter.tryAccess(file);
 
 		if (file.isDirectory()) {
 			throw new IllegalArgumentException("a directory: "+file);

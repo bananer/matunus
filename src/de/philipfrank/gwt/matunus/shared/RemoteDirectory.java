@@ -13,6 +13,19 @@ public class RemoteDirectory extends LinkedList<RemoteFile> implements List<Remo
 	 * 
 	 */
 	private static final long serialVersionUID = -5396599425070946605L;
+	
+	private String parentDir;
+	
+	public RemoteDirectory(){
+		parentDir = "";
+	}
 
-	public RemoteDirectory(){}
+	public RemoteDirectory(String par){
+		parentDir = par;
+	}
+	
+	public String getParentDir() {
+		return parentDir;
+	}
+	
 }

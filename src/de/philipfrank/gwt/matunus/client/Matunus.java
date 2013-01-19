@@ -37,27 +37,22 @@ public class Matunus implements EntryPoint {
 	private Widget spinner = new Label("Loading...");
 
 	private void setDirectory(String newDir) {
-		
-		if(directory.isEmpty() || directory.equals("/")) {
-			parentLink.setVisible(false);
-			directory = "/";
-		}
-		else {
-			// TODO: breaks when using browser forward button
-			parentLink.setTargetHistoryToken(directory.substring(0, directory.lastIndexOf("/")));
-			parentLink.setVisible(true);
-		}
-		
 		spinner.setVisible(true);
 
+		fileList.removeItems();
 		directory = newDir;
+		directoryLabel.setText(directory);
+		parentLink.setVisible(false);
 		fileListService.read(directory, new AsyncCallback<RemoteDirectory>() {
 			@Override
 			public void onSuccess(RemoteDirectory result) {
-
-				fileList.removeItems();
-				directoryLabel.setText(directory.isEmpty() ? "/" : directory);
 				spinner.setVisible(false);
+				
+				if(!result.getParentDir().isEmpty()) {
+					parentLink.setTargetHistoryToken(result.getParentDir());
+					parentLink.setVisible(true);
+				}
+								
 				for (RemoteFile entry : result) {
 					if (entry.isDirectory()) {
 						fileList.addItem(new TreeItem(new DirectoryWidget(directory, entry)));
