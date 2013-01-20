@@ -4,7 +4,7 @@ import java.io.File;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-import de.philipfrank.gwt.matunus.client.FileListService;
+import de.philipfrank.gwt.matunus.client.rpc.FileListService;
 import de.philipfrank.gwt.matunus.shared.RemoteDirectory;
 import de.philipfrank.gwt.matunus.shared.RemoteFile;
 import de.philipfrank.gwt.matunus.shared.Util;
@@ -51,7 +51,7 @@ public class FileListServiceImpl extends RemoteServiceServlet implements
 
 		for (File file : dir.listFiles()) {
 			if(accessFilter.canAccess(file)) {
-				RemoteFile r = new RemoteFile(file.getName(), file.isDirectory());
+				RemoteFile r = new RemoteFile(file.getName(), file.isDirectory(), file.length());
 				r.setDownloadLink(urlRoot + "get/"+requestedDir+file.getName());
 				res.add(r);
 			}

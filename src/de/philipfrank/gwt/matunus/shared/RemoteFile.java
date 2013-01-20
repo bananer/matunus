@@ -5,13 +5,15 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class RemoteFile implements IsSerializable {
 	private String name;
 	private String downloadLink;
+	private long size;
 	private boolean isDir;
 	
 	public RemoteFile() {}
 	
-	public RemoteFile(String name, boolean isDir) {
+	public RemoteFile(String name, boolean isDir, long size) {
 		this.name = name;
 		this.isDir = isDir;
+		this.size = size;
 	}
 
 	public boolean isDirectory() {
@@ -30,5 +32,7 @@ public class RemoteFile implements IsSerializable {
 		return downloadLink;
 	}
 	
-	
+	public long getSize() {
+		return size;
+	}
 }

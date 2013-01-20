@@ -1,4 +1,4 @@
-package de.philipfrank.gwt.matunus.client;
+package de.philipfrank.gwt.matunus.client.rpc;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
