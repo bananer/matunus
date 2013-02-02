@@ -11,11 +11,8 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
-import com.google.gwt.user.cellview.client.HasKeyboardPagingPolicy.KeyboardPagingPolicy;
-import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -26,15 +23,12 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.Range;
-import com.google.gwt.view.client.SelectionChangeEvent;
-import com.google.gwt.view.client.SingleSelectionModel;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 import de.philipfrank.gwt.matunus.client.rpc.FileListService;
 import de.philipfrank.gwt.matunus.client.rpc.FileListServiceAsync;
 import de.philipfrank.gwt.matunus.shared.RemoteDirectory;
 import de.philipfrank.gwt.matunus.shared.RemoteFile;
-import de.philipfrank.gwt.matunus.shared.Util;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -147,22 +141,6 @@ public class Matunus implements EntryPoint {
 		sizeCol.setSortable(true);
 		cellTable.addColumn(sizeCol, "Size");
 		dataProvider.addDataDisplay(cellTable);
-		
-		cellTable.setKeyboardSelectionPolicy(KeyboardSelectionPolicy.DISABLED);
-		final SingleSelectionModel<RemoteFile> selectionModel = new SingleSelectionModel<RemoteFile>();
-		cellTable.setSelectionModel(selectionModel);
-		selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
-			@Override
-			public void onSelectionChange(SelectionChangeEvent event) {
-				RemoteFile selected = selectionModel.getSelectedObject();
-				if(selected.isDirectory()) {
-					History.newItem(Util.tailSlash(directory) + Util.tailSlash(selected.getName()));
-				}
-				else {
-					Window.open(selected.getDownloadLink(), "_blank", "");
-				}
-			}
-		});
 		
 		container.add(cellTable);
 		History.addValueChangeHandler(new ValueChangeHandler<String>() {

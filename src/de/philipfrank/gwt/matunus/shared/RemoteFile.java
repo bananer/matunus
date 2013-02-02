@@ -33,7 +33,6 @@ public class RemoteFile implements IsSerializable {
 	}
 	
 	public long getSize() {
-		if(isDirectory()) return 0;
 		return size;
 	}
 }
