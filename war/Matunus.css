@@ -1,58 +1,73 @@
-/** Add css rules here for your application. */
-
-
-/** Example rules used by the template application (remove for your app) */
-h1 {
-  font-size: 2em;
-  font-weight: bold;
-  color: #777777;
-  margin: 40px 0px 70px;
-  text-align: center;
-}
-
 #fileListContainer {
-	border: 2px blue solid;
+	max-width: 1024px;
+	margin-left: auto;
+	margin-right: auto;
+	border: solid 1px grey;
 }
 
 .sendButton {
-  display: block;
-  font-size: 16pt;
+	display: block;
+	font-size: 16pt;
 }
 
 /** Most GWT widgets already have a style name defined */
 .gwt-DialogBox {
-  width: 400px;
+	width: 400px;
 }
 
 .dialogVPanel {
-  margin: 5px;
+	margin: 5px;
 }
 
 .serverResponseLabelError {
-  color: red;
+	color: red;
 }
 
 /** Set ids using widget.getElement().setId("idOfElement") */
 #closeButton {
-  margin: 15px 6px 6px;
+	margin: 15px 6px 6px;
 }
 
 .fileRow {
 	padding: 1px 5px 1px 1px;
 }
 
+.parentLink, .downloadDir {
+	height: 28px;
+}
+
 .fileRow-even {
-	background-color: rgb(220,220,255);
+	background-color: rgb(220, 220, 255);
 }
 
 .topRow {
-	
+	height: 32px;
+	background: grey;
+	width: 100%;
 }
 
-.fileLink, .fileLink a {
+.topRow, .topRow a {
+	
+    color: white;
+}
+
+.fileLink,.fileLink a {
 	color: black;
 	margin-left: 4px;
 }
-.fileLink:VISITED, .fileLink a:VISITED {
-	color: rgb(80,80,80);
+
+.fileLink:VISITED,.fileLink a:VISITED {
+	color: rgb(80, 80, 80);
+}
+
+noscript div {
+	width: 22em;
+	position: absolute;
+	left: 50%;
+	margin-left: -11em;
+	color: red;
+	background-color: white;
+	border: 1px solid red;
+	padding: 4px;
+	font-family: sans-serif
 }
