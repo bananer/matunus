@@ -36,6 +36,17 @@
       <url-pattern>/matunus/get/*</url-pattern>
   </servlet-mapping>
   
+  
+  <servlet>
+      <servlet-name>dirZipServlet</servlet-name>
+      <servlet-class>de.philipfrank.gwt.matunus.server.DirZipServlet</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+      <servlet-name>dirZipServlet</servlet-name>
+      <url-pattern>/matunus/zip/*</url-pattern>
+  </servlet-mapping>
+  
   <!-- Default page to serve -->
   <welcome-file-list>
     <welcome-file>Matunus.html</welcome-file>

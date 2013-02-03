@@ -13,27 +13,25 @@ public class FileListServiceImpl extends RemoteServiceServlet implements
 		FileListService {
 	private UriUtil uris;
 	private AccessFilter accessFilter;
-	
+
 	@Override
-	public void init(){
+	public void init() {
 		uris = new UriUtil(getServletContext());
 		accessFilter = new AccessFilter(getServletContext());
 	}
-	
+
 	protected String parentDir(String dir) {
-		if(dir.isEmpty() || dir.equals("/")) {
-			return "";
+		if (dir.isEmpty() || dir.equals("/")) {
+			return null;
 		}
-		if(dir.lastIndexOf("/") == dir.length()-1) {
-			dir = dir.substring(0,dir.length()-1);
+		if (dir.lastIndexOf("/") == dir.length() - 1) {
+			dir = dir.substring(0, dir.length() - 1);
 		}
-		if(dir.lastIndexOf("/") <= 0) {
+		if (dir.lastIndexOf("/") <= 0) {
 			return "/";
 		}
 		return dir.substring(0, dir.lastIndexOf("/"));
 	}
-	
-
 
 	@Override
 	public RemoteDirectory read(String requestedDir) {
@@ -43,21 +41,25 @@ public class FileListServiceImpl extends RemoteServiceServlet implements
 		accessFilter.tryAccess(dir);
 
 		if (!dir.isDirectory()) {
-			throw new IllegalArgumentException("not a directory: "+dir);
+			throw new IllegalArgumentException("not a directory: " + dir);
 		}
-		
+
 		String zippedDL = null;
-		if(!dir.equals(accessFilter.getRootDir())){
-			zippedDL = uris.getServletUri("zip", requestedDir, null).toASCIIString();
+		if (!dir.equals(accessFilter.getRootDir())) {
+			zippedDL = uris.getServletUri("zip", requestedDir, null)
+					.toASCIIString();
 		}
-		
-		final RemoteDirectory res = new RemoteDirectory(requestedDir, parentDir(requestedDir), zippedDL);
+
+		final RemoteDirectory res = new RemoteDirectory(requestedDir,
+				parentDir(requestedDir), zippedDL);
 
 		for (File file : dir.listFiles()) {
-			if(accessFilter.canAccess(file)) {
-				RemoteFile r = new RemoteFile(file.getName(), file.isDirectory());
-				r.setDownloadLink(uris.getServletUri("get", requestedDir, r).toASCIIString());
-				
+			if (accessFilter.canAccess(file)) {
+				RemoteFile r = new RemoteFile(file.getName(),
+						file.isDirectory());
+				r.setDownloadLink(uris.getServletUri("get", requestedDir, r)
+						.toASCIIString());
+
 				res.add(r);
 			}
 		}

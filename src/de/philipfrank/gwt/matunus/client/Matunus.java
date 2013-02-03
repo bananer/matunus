@@ -31,7 +31,7 @@ public class Matunus implements EntryPoint {
 	private final FileListServiceAsync fileListService = GWT
 			.create(FileListService.class);
 	private String directory;
-	
+
 	// UI elements
 	private VerticalPanel fileList = new VerticalPanel(); // TODO: images
 	private Label directoryLabel = new Label("/", false);
@@ -46,18 +46,24 @@ public class Matunus implements EntryPoint {
 		directory = newDir;
 		parentLink.setVisible(false);
 		directoryLabel.setVisible(false);
+		downloadDirLink.setVisible(false);
 		fileListService.read(directory, new AsyncCallback<RemoteDirectory>() {
 			@Override
 			public void onSuccess(RemoteDirectory result) {
 				spinner.setVisible(false);
 				directoryLabel.setVisible(true);
 				directoryLabel.setText(result.getDisplayName());
-				
-				if(!result.getParentDir().isEmpty()) {
+
+				if (result.getParentDir() != null) {
 					parentLink.setTargetHistoryToken(result.getParentDir());
 					parentLink.setVisible(true);
 				}
-				
+
+				if (result.getZippedDownload() != null) {
+					downloadDirLink.setHref(result.getZippedDownload());
+					downloadDirLink.setVisible(true);
+				}
+
 				RemoteDirectory.sort(result);
 
 				int i = 0;
@@ -76,33 +82,37 @@ public class Matunus implements EntryPoint {
 	/**
 	 * This is the entry point method.
 	 */
+	@Override
 	public void onModuleLoad() {
 		directory = History.getToken();
-		
+
 		fileList.setWidth("100%");
 
 		RootPanel container = RootPanel.get("fileListContainer");
-		
-		Image parentLinkImage = new Image(UriUtils.fromSafeConstant("icons/up.svg"));
+
+		Image parentLinkImage = new Image(
+				UriUtils.fromSafeConstant("icons/up.svg"));
 		parentLinkImage.setWidth("15px");
-		parentLink.getElement().getFirstChild().appendChild(parentLinkImage.getElement());
-		
-		Image downloadDirLinkImage = new Image(UriUtils.fromSafeConstant("icons/download.svg"));
+		parentLink.getElement().getFirstChild()
+				.appendChild(parentLinkImage.getElement());
+
+		Image downloadDirLinkImage = new Image(
+				UriUtils.fromSafeConstant("icons/download.svg"));
 		downloadDirLinkImage.setWidth("15px");
-		downloadDirLink.getElement().appendChild(downloadDirLinkImage.getElement());
-		
+		downloadDirLink.getElement().appendChild(
+				downloadDirLinkImage.getElement());
+
 		HorizontalPanel topRow = new HorizontalPanel();
 		topRow.setStylePrimaryName("topRow");
-		
+
 		spinner = RootPanel.get("spinner");
 		topRow.add(spinner);
 		topRow.add(parentLink);
 		topRow.add(directoryLabel);
 		topRow.add(downloadDirLink);
-		
-		
+
 		container.add(topRow);
-		
+
 		container.add(fileList);
 		History.addValueChangeHandler(new ValueChangeHandler<String>() {
 			@Override
@@ -114,7 +124,6 @@ public class Matunus implements EntryPoint {
 		History.fireCurrentHistoryState();
 
 	}
-	
 
 	private void connectionError(Throwable caught) {
 
@@ -130,6 +139,7 @@ public class Matunus implements EntryPoint {
 
 		// Add a handler to close the DialogBox
 		closeButton.addClickHandler(new ClickHandler() {
+			@Override
 			public void onClick(ClickEvent event) {
 				dialogBox.hide();
 			}
@@ -137,5 +147,5 @@ public class Matunus implements EntryPoint {
 
 		dialogBox.center();
 	}
-	
+
 }
