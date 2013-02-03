@@ -1,0 +1,4 @@
+© 2007 Nuno Pinheiro & David Vignoni & David Miller & Johann Ollivier Lapeyre & Kenneth Wimer & Riccardo Iaconelli / KDE / LGPL 3
+
+Source file: http://download.kde.org/download.php?url=stable/4.8.0/src/oxygen-icons-4.8.0.tar.bz2
+License text: https://www.gnu.org/copyleft/lgpl.html

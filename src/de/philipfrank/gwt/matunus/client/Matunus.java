@@ -6,15 +6,17 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.safehtml.shared.UriUtils;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.Tree;
-import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -31,34 +33,36 @@ public class Matunus implements EntryPoint {
 	private String directory;
 	
 	// UI elements
-	private Tree fileList = new Tree(); // TODO: images
+	private VerticalPanel fileList = new VerticalPanel(); // TODO: images
 	private Label directoryLabel = new Label("/", false);
-	private Hyperlink parentLink = new Hyperlink("..", "");
-	private Widget spinner = new Label("Loading...");
+	private Hyperlink parentLink = new Hyperlink();
+	private Widget spinner;
+	private Anchor downloadDirLink = new Anchor(".zip");
 
 	private void setDirectory(String newDir) {
 		spinner.setVisible(true);
 
-		fileList.removeItems();
+		fileList.clear();
 		directory = newDir;
-		directoryLabel.setText(directory);
 		parentLink.setVisible(false);
+		directoryLabel.setVisible(false);
 		fileListService.read(directory, new AsyncCallback<RemoteDirectory>() {
 			@Override
 			public void onSuccess(RemoteDirectory result) {
 				spinner.setVisible(false);
+				directoryLabel.setVisible(true);
+				directoryLabel.setText(result.getDisplayName());
 				
 				if(!result.getParentDir().isEmpty()) {
 					parentLink.setTargetHistoryToken(result.getParentDir());
 					parentLink.setVisible(true);
 				}
-								
+				
+				RemoteDirectory.sort(result);
+
+				int i = 0;
 				for (RemoteFile entry : result) {
-					if (entry.isDirectory()) {
-						fileList.addItem(new TreeItem(new DirectoryWidget(directory, entry)));
-					} else {
-						fileList.addItem(new TreeItem(new FileWidget(entry)));
-					}
+					fileList.add(new FileWidget(entry, directory, i++));
 				}
 			}
 
@@ -74,11 +78,31 @@ public class Matunus implements EntryPoint {
 	 */
 	public void onModuleLoad() {
 		directory = History.getToken();
+		
+		fileList.setWidth("100%");
 
 		RootPanel container = RootPanel.get("fileListContainer");
-		container.add(directoryLabel);
-		container.add(spinner);
-		container.add(parentLink);
+		
+		Image parentLinkImage = new Image(UriUtils.fromSafeConstant("icons/up.svg"));
+		parentLinkImage.setWidth("15px");
+		parentLink.getElement().getFirstChild().appendChild(parentLinkImage.getElement());
+		
+		Image downloadDirLinkImage = new Image(UriUtils.fromSafeConstant("icons/download.svg"));
+		downloadDirLinkImage.setWidth("15px");
+		downloadDirLink.getElement().appendChild(downloadDirLinkImage.getElement());
+		
+		HorizontalPanel topRow = new HorizontalPanel();
+		topRow.setStylePrimaryName("topRow");
+		
+		spinner = RootPanel.get("spinner");
+		topRow.add(spinner);
+		topRow.add(parentLink);
+		topRow.add(directoryLabel);
+		topRow.add(downloadDirLink);
+		
+		
+		container.add(topRow);
+		
 		container.add(fileList);
 		History.addValueChangeHandler(new ValueChangeHandler<String>() {
 			@Override

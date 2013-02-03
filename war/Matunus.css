@@ -36,3 +36,23 @@ h1 {
 #closeButton {
   margin: 15px 6px 6px;
 }
+
+.fileRow {
+	padding: 1px 5px 1px 1px;
+}
+
+.fileRow-even {
+	background-color: rgb(220,220,255);
+}
+
+.topRow {
+	
+}
+
+.fileLink, .fileLink a {
+	color: black;
+	margin-left: 4px;
+}
+.fileLink:VISITED, .fileLink a:VISITED {
+	color: rgb(80,80,80);
+}

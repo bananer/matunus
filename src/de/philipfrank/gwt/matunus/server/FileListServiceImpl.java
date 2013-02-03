@@ -7,34 +7,33 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import de.philipfrank.gwt.matunus.client.FileListService;
 import de.philipfrank.gwt.matunus.shared.RemoteDirectory;
 import de.philipfrank.gwt.matunus.shared.RemoteFile;
-import de.philipfrank.gwt.matunus.shared.Util;
 
 @SuppressWarnings("serial")
 public class FileListServiceImpl extends RemoteServiceServlet implements
 		FileListService {
-	private String urlRoot;
+	private UriUtil uris;
 	private AccessFilter accessFilter;
 	
 	@Override
 	public void init(){
-		urlRoot = Util.tailSlash(getServletContext().getInitParameter("urlRoot"));
+		uris = new UriUtil(getServletContext());
 		accessFilter = new AccessFilter(getServletContext());
 	}
 	
 	protected String parentDir(String dir) {
-		if(!dir.startsWith(accessFilter.getRootDir())) {
+		if(dir.isEmpty() || dir.equals("/")) {
 			return "";
 		}
-		dir = dir.substring(accessFilter.getRootDir().length());
-		
 		if(dir.lastIndexOf("/") == dir.length()-1) {
-			dir = dir.substring(dir.length()-1);
+			dir = dir.substring(0,dir.length()-1);
 		}
 		if(dir.lastIndexOf("/") <= 0) {
-			return "";
+			return "/";
 		}
 		return dir.substring(0, dir.lastIndexOf("/"));
 	}
+	
+
 
 	@Override
 	public RemoteDirectory read(String requestedDir) {
@@ -47,12 +46,18 @@ public class FileListServiceImpl extends RemoteServiceServlet implements
 			throw new IllegalArgumentException("not a directory: "+dir);
 		}
 		
-		final RemoteDirectory res = new RemoteDirectory(parentDir(dir.getPath()));
+		String zippedDL = null;
+		if(!dir.equals(accessFilter.getRootDir())){
+			zippedDL = uris.getServletUri("zip", requestedDir, null).toASCIIString();
+		}
+		
+		final RemoteDirectory res = new RemoteDirectory(requestedDir, parentDir(requestedDir), zippedDL);
 
 		for (File file : dir.listFiles()) {
 			if(accessFilter.canAccess(file)) {
 				RemoteFile r = new RemoteFile(file.getName(), file.isDirectory());
-				r.setDownloadLink(urlRoot + "get/"+requestedDir+file.getName());
+				r.setDownloadLink(uris.getServletUri("get", requestedDir, r).toASCIIString());
+				
 				res.add(r);
 			}
 		}

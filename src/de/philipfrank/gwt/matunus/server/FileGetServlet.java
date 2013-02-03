@@ -13,19 +13,20 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 
 /**
- * Servlet for file downloads
- * TODO: maybe use this: http://balusc.blogspot.de/2009/02/fileservlet-supporting-resume-and.html
+ * Servlet for file downloads TODO: maybe use this:
+ * http://balusc.blogspot.de/2009/02/fileservlet-supporting-resume-and.html
+ * 
  * @author Philip Frank
- *
+ * 
  */
 public class FileGetServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -74009257484379937L;
-	
+
 	AccessFilter accessFilter;
-	
+
 	@Override
-	public void init(){
+	public void init() {
 		accessFilter = new AccessFilter(getServletContext());
 	}
 
@@ -40,13 +41,13 @@ public class FileGetServlet extends HttpServlet {
 		accessFilter.tryAccess(file);
 
 		if (file.isDirectory()) {
-			throw new IllegalArgumentException("a directory: "+file);
+			throw new IllegalArgumentException("a directory: " + file);
 		}
-		
+
 		FileInputStream fis = new FileInputStream(file);
 		OutputStream os = resp.getOutputStream();
-		
+
 		IOUtils.copy(fis, os);
 	}
-	
+
 }

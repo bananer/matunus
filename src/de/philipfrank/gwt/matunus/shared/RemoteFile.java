@@ -1,5 +1,7 @@
 package de.philipfrank.gwt.matunus.shared;
 
+import java.net.URI;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class RemoteFile implements IsSerializable {
