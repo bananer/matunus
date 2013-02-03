@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -47,6 +48,7 @@ public class DirZipServlet extends HttpServlet {
 				"attachment; filename=\"" + file.getName() + ".zip\"");
 
 		ZipOutputStream zos = new ZipOutputStream(resp.getOutputStream());
+		zos.setLevel(Deflater.BEST_SPEED);
 		zipDir(file, file.toURI(), zos);
 		zos.close();
 	}
@@ -59,22 +61,19 @@ public class DirZipServlet extends HttpServlet {
 		File[] contents = dir.listFiles();
 		for (File f : contents) {
 			String relName = base.relativize(f.toURI()).getPath();
-			try {
-				if (f.isDirectory()) {
-					os.putNextEntry(new ZipEntry(relName));
-					zipDir(f, base, os);
-					os.closeEntry();
-				} else {
-					FileInputStream fis = new FileInputStream(f);
+			if (f.isDirectory()) {
+				os.putNextEntry(new ZipEntry(relName));
+				zipDir(f, base, os);
+				os.closeEntry();
+			} else {
+				FileInputStream fis = new FileInputStream(f);
+				try {
 					os.putNextEntry(new ZipEntry(relName));
 					IOUtils.copy(fis, os);
-					fis.close();
 					os.closeEntry();
+				} finally {
+					fis.close();
 				}
-			} catch (IOException e) {
-				System.err.println("Error while reading " + relName);
-				e.printStackTrace();
-				throw e;
 			}
 		}
 	}

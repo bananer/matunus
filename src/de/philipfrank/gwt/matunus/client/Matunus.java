@@ -12,6 +12,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
 import com.google.gwt.user.client.ui.Image;
@@ -92,24 +93,27 @@ public class Matunus implements EntryPoint {
 
 		Image parentLinkImage = new Image(
 				UriUtils.fromSafeConstant("icons/up.svg"));
-		parentLinkImage.setWidth("15px");
+		parentLinkImage.setStylePrimaryName("parentLink");
+		parentLinkImage.setAltText("(up)");
 		parentLink.getElement().getFirstChild()
 				.appendChild(parentLinkImage.getElement());
 
 		Image downloadDirLinkImage = new Image(
 				UriUtils.fromSafeConstant("icons/download.svg"));
-		downloadDirLinkImage.setWidth("15px");
+		downloadDirLinkImage.setStylePrimaryName("downloadDir");
 		downloadDirLink.getElement().appendChild(
 				downloadDirLinkImage.getElement());
 
 		HorizontalPanel topRow = new HorizontalPanel();
 		topRow.setStylePrimaryName("topRow");
+		topRow.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 
 		spinner = RootPanel.get("spinner");
 		topRow.add(spinner);
 		topRow.add(parentLink);
 		topRow.add(directoryLabel);
 		topRow.add(downloadDirLink);
+		topRow.setCellWidth(directoryLabel, "100%");
 
 		container.add(topRow);
 
